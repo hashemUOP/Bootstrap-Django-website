@@ -1,0 +1,16 @@
+.welcome-message {
+    color: #363433;
+    font-family: 'Montserrat', sans-serif;
+     margin-left: 180px;
+     margin-top: 20px;
+}
+
+.welcome-text, .username {
+    font-size: 35px; /* Adjust the font size as needed */
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    color: #363433;
+}
+.space {
+    margin-right: 8px; /* Adjust the margin as needed */
+}

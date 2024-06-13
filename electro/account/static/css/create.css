@@ -1,0 +1,42 @@
+.form-container {
+        width: 40%; /* Adjust the width of the container */
+        background-color: #333;
+        padding: 10px; /* Adjust padding to create space for the form */
+        border-radius: 10px;
+        height: 80%; /* Adjust the height of the container */
+        margin-right: 30px; /* Adjust the margin to move it away from the right */
+        overflow: auto; /* Add overflow property to enable scrolling if needed */
+    }
+
+
+        body {
+            background-color: black;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0;
+        }
+        .logo-container {
+            width: 40%; /* Adjust the width of the container */
+            padding: 20px;
+            margin-left: 20px; /* Add margin to separate from the form */
+        }
+        .form-container {
+            width: 40%; /* Adjust the width of the container */
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .btn-primary {
+            background-color: red;
+            border-color: red;
+        }
+        .logo-container img {
+            max-width: 100%;
+            height: auto;
+        }
+        .logo-container p {
+            margin-top: 20px;
+        }
