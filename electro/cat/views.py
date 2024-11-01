@@ -1,8 +1,6 @@
-from django.shortcuts import render
-
-
-# Create your views here.
-
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from products.models import ProductModel
 def cat(request):
     return render(request, "catgories.html")
 
@@ -25,3 +23,4 @@ def phones(request):
 
 def headphones(request):
     return render(request,"headphones.html")
+

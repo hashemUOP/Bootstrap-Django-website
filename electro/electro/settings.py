@@ -34,6 +34,7 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = [
     'home',
     'account',
+    'shopping',
     'cat',
     'products',
     'crispy_forms',
