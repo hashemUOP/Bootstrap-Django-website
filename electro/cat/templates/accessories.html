@@ -28,6 +28,55 @@
  		<link type="text/css" rel="stylesheet" href="{% static 'css/style.css' %}"/>
 		<link type="text/css" rel="stylesheet" href="{% static 'css/footer.css' %}"/>
 
+		<style>
+		.add-to-wishlist .tooltipp {
+			display: none; /* Hide the tooltip by default */
+			position: absolute; /* Position the tooltip absolutely */
+			bottom: 100%; /* Place it above the button */
+			left: 50%; /* Center it horizontally */
+			transform: translateX(-50%); /* Adjust for center alignment */
+			background-color: #333; /* Background color */
+			color: #fff; /* Text color */
+			padding: 5px 10px; /* Padding for the tooltip */
+			border-radius: 5px; /* Rounded corners */
+			z-index: 100; /* Ensure it's on top */
+		}
+
+		.add-to-wishlist:hover .tooltipp {
+			display: block; /* Show the tooltip on hover */
+		}
+		/* very important css prevent product name length from affecting the height of the product card */
+		.product-body {
+			height: 220px; /* Set a fixed height for consistency */
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+		}
+
+		.product-name {
+			display: -webkit-box; /* Necessary for line clamping */
+			-webkit-line-clamp: 2; /* Limits to two lines */
+			-webkit-box-orient: vertical; /* Necessary for line clamping */
+			overflow: hidden; /* Hides overflow text */
+			text-overflow: ellipsis; /* Adds ellipsis (...) for overflowed text */
+		}
+		.product-img {
+			height: 200px; /* Fixed height for all images */
+			width: 100%; /* Full width of the card */
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background-color: white; /* Optional: background color to fill empty spaces */
+		}
+
+		.product-img img {
+			height: 80%;
+			width: 100%;
+			object-fit: contain; /* Ensure the entire image is visible without cropping */
+
+		}
+		</style>
+
 		<!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
 		<!--[if lt IE 9]>
@@ -96,10 +145,10 @@
 							<div class="header-ctn">
 								<!-- Wishlist -->
 								<div>
-									<a href="#">
+									<a href="{% url 'wishlist' %}">
 										<i class="fa fa-heart-o"></i>
 										<span>Your Wishlist</span>
-										<div class="qty">2</div>
+										<div class="qty">{{num_of_wishlist_items}}</div>
 									</a>
 								</div>
 								<!-- /Wishlist -->
@@ -109,39 +158,33 @@
 									<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
 										<i class="fa fa-shopping-cart"></i>
 										<span>Your Cart</span>
-										<div class="qty">3</div>
+										<div class="qty">{{num_of_items}}</div>
 									</a>
 									<div class="cart-dropdown">
 										<div class="cart-list">
+                                            {% for item in cart_items%}
 											<div class="product-widget">
 												<div class="product-img">
-													<img src="{% static 'img/product01.png' %}" alt="">
+													<img src="{{ item.image1.url }}" alt="{{ item.product_name }}">
 												</div>
 												<div class="product-body">
-													<h3 class="product-name"><a href="#">product name goes here</a></h3>
-													<h4 class="product-price"><span class="qty">1x</span>$980.00</h4>
+													<h3 class="product-name"><a href="#">{{ item.product_name }}</a></h3>
+													<h4 class="product-price"><span class="qty">{{item.quantity}}x</span>${{ item.price }}</h4>
 												</div>
-												<button class="delete"><i class="fa fa-close"></i></button>
+                                                <button type="button" onclick="if(confirm('Are you sure you want to remove this item from your cart?')) { window.location.href='{% url 'remove_cart_item' item.cart_id %}'; }" style="border: none; background: none; cursor: pointer; margin-left: auto;">
+                                                    <i class='fa fa-close'></i>
+                                                </button>
 											</div>
+                                            {% endfor %}
 
-											<div class="product-widget">
-												<div class="product-img">
-													<img src="{% static 'img/product02.png' %}" alt="">
-												</div>
-												<div class="product-body">
-													<h3 class="product-name"><a href="#">product name goes here</a></h3>
-													<h4 class="product-price"><span class="qty">3x</span>$980.00</h4>
-												</div>
-												<button class="delete"><i class="fa fa-close"></i></button>
-											</div>
 										</div>
 										<div class="cart-summary">
-											<small>3 Item(s) selected</small>
-											<h5>SUBTOTAL: $2940.00</h5>
+											<small>{{num_of_items}} Item(s) selected</small>
+											<h5>SUBTOTAL: ${{total}}</h5>
 										</div>
 										<div class="cart-btns">
-											<a href="#">View Cart</a>
-											<a href="#">Checkout  <i class="fa fa-arrow-circle-right"></i></a>
+											<a href="{% url 'cart' %}">View Cart</a>
+											<a href="{% url 'cart' %}">Checkout  <i class="fa fa-arrow-circle-right"></i></a>
 										</div>
 									</div>
 								</div>
@@ -427,279 +470,57 @@
 
 						<!-- store products -->
 						<div class="row">
-							<!-- product -->
-							<a href="{% url 'product_detail' product_id=24 %}">
-							<div class="col-md-4 col-xs-6">
-								<div class="product">
-									<div class="product-img">
-										<img src="{% static 'img/accessories/IPAD-STAND-F552-1200x1200-1200x1200.webp' %}" alt="">
-										<div class="product-label">
-											<span class="sale">-30%</span>
-											<span class="new">NEW</span>
+							{% for product in products_instances %}
+								<!-- product -->
+								<div class="col-md-4 col-xs-6">
+									<a href="{% url 'product_detail' product_id=product.ID %}">
+										<div class="product">
+											<div class="product-img">
+												<img src="{{ product.image1.url }}" alt="{{ product.name }}">
+												<div class="product-label">
+													<span class="new">NEW</span>
+												</div>
+											</div>
+											<div class="product-body">
+												<p class="product-category">{{ product.cat }}</p>
+												<h3 class="product-name"><a href="{% url 'product_detail' product_id=product.ID %}">{{ product.name }}</a></h3>
+												<h4 class="product-price">${{ product.price }} <del class="product-old-price">${{ product.price }}</del></h4>
+												<div class="product-rating">
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star"></i>
+													<i class="fa fa-star-o"></i>
+												</div>
+												<div class="product-btns">
+													<form action="{% url 'add_to_wishlist' %}" method="POST" style="display: inline;">
+														{% csrf_token %}
+														<input type="hidden" name="product_id" value="{{ product.ID }}">
+														<input type="hidden" name="product_name" value="{{ product.name }}">
+														<button type="submit" class="add-to-wishlist" style="border: none; background: none; padding: 0; margin: 0; position: relative;">
+															<i class="fa fa-heart-o"></i>
+															<span class="tooltipp">add to wishlist</span>
+														</button>
+													</form>
+													<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
+													<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
+												</div>
+											</div>
+											<form action="{% url 'add_to_cart' %}" method="POST" style="display: inline;">
+														{% csrf_token %}
+														<input type="hidden" name="product_id" value="{{ product.ID }}">
+														<input type="hidden" name="product_name" value="{{ product.name }}">
+														<div class="add-to-cart">
+															<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
+														</div>
+											</form>
 										</div>
-									</div>
-									<div class="product-body">
-										<p class="product-category">Accessories</p>
-										<h3 class="product-name"><a href="#">ipad table stand </a></h3>
-										<h4 class="product-price">$10.00 <del class="product-old-price">$15.00</del></h4>
-										<div class="product-rating">
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-										</div>
-										<div class="product-btns">
-											<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-											<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-											<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-										</div>
-									</div>
-									<div class="add-to-cart">
-										<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-									</div>
+									</a>
 								</div>
-							</div>
-							</a>
-							<!-- /product -->
+								<div class="clearfix visible-sm visible-xs"></div>
+								<!-- /product -->
+							{% endfor %}
 
-							<!-- product -->
-							<a href="{% url 'product_detail' product_id=25 %}">
-							<div class="col-md-4 col-xs-6">
-								<div class="product">
-									<div class="product-img">
-										<img src="{% static 'img/accessories/USB-Type-C-Charging-Cable-5-Ampere-White-1200x1200.webp' %}" alt="">
-										<div class="product-label">
-											<span class="new">NEW</span>
-										</div>
-									</div>
-									<div class="product-body">
-										<p class="product-category">Accessories</p>
-										<h3 class="product-name"><a href="#">Linkcomn KD202 USB Type-C Charging Cable 1M - White</a></h3>
-										<h4 class="product-price">$2.00 <del class="product-old-price">$5.00</del></h4>
-										<div class="product-rating">
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star-o"></i>
-										</div>
-										<div class="product-btns">
-											<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-											<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-											<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-										</div>
-									</div>
-									<div class="add-to-cart">
-										<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-									</div>
-								</div>
-							</div>
-							</a>
-							<!-- /product -->
-
-							<div class="clearfix visible-sm visible-xs"></div>
-
-							<!-- product -->
-							<a href="{% url 'product_detail' product_id=26 %}">
-							<div class="col-md-4 col-xs-6">
-								<div class="product">
-									<div class="product-img">
-										<img src="{% static 'img/accessories/k480_black_1-1200x1200.webp' %}" alt="">
-									</div>
-									<div class="product-body">
-										<p class="product-category">Accessories</p>
-										<h3 class="product-name"><a href="#">Logitech Bluetooth Keyboard K480</a></h3>
-										<h4 class="product-price">$35.00 <del class="product-old-price">$50.00</del></h4>
-										<div class="product-rating">
-										</div>
-										<div class="product-btns">
-											<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-											<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-											<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-										</div>
-									</div>
-									<div class="add-to-cart">
-										<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-									</div>
-								</div>
-							</div>
-							</a>
-							<!-- /product -->
-
-							<div class="clearfix visible-lg visible-md"></div>
-
-							<!-- product -->
-							<a href="{% url 'product_detail' product_id=27 %}">
-							<div class="col-md-4 col-xs-6">
-								<div class="product">
-									<div class="product-img">
-										<img src="{% static 'img/accessories/huawei_matedock2_1-1200x1200.webp' %}" alt="">
-									</div>
-									<div class="product-body">
-										<p class="product-category">Accessories</p>
-										<h3 class="product-name"><a href="#">Huawei MateDock 2</a></h3>
-										<h4 class="product-price">$25.00 <del class="product-old-price">$40.00</del></h4>
-										<div class="product-rating">
-										</div>
-										<div class="product-btns">
-											<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-											<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-											<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-										</div>
-									</div>
-									<div class="add-to-cart">
-										<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-									</div>
-								</div>
-							</div>
-							</a>
-							<!-- /product -->
-
-							<div class="clearfix visible-sm visible-xs"></div>
-
-							<!-- product -->
-							<a href="{% url 'product_detail' product_id=28 %}">
-							<div class="col-md-4 col-xs-6">
-								<div class="product">
-									<div class="product-img">
-										<img src="{% static 'img/accessories/IPD109UPP-BK 1-1200x1200.webp' %}" alt="">
-									</div>
-									<div class="product-body">
-										<p class="product-category">Accessories</p>
-										<h3 class="product-name"><a href="#"> Ipad Air Case 10.5"</a></h3>
-										<h4 class="product-price">$19.00 <del class="product-old-price">$25.00</del></h4>
-										<div class="product-rating">
-										</div>
-										<div class="product-btns">
-											<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-											<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-											<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-										</div>
-									</div>
-									<div class="add-to-cart">
-										<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-									</div>
-								</div>
-							</div>
-							</a>
-							<!-- /product -->
-
-							<!-- product -->
-							<a href="{% url 'product_detail' product_id=29 %}">
-							<div class="col-md-4 col-xs-6">
-								<div class="product">
-									<div class="product-img">
-										<img src="{% static 'img/accessories/g413-mechanical-gaming-keyboard-gallery-1-1200x1200.webp' %}" alt="">
-									</div>
-									<div class="product-body">
-										<p class="product-category">Accessories</p>
-										<h3 class="product-name"><a href="#">Logitech G413 </a></h3>
-										<h4 class="product-price">$80.00 <del class="product-old-price">$120.00</del></h4>
-										<div class="product-rating">
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star-o"></i>
-										</div>
-										<div class="product-btns">
-											<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-											<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-											<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-										</div>
-									</div>
-									<div class="add-to-cart">
-										<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-									</div>
-								</div>
-							</div>
-							</a>
-							<!-- /product -->
-
-							<div class="clearfix visible-lg visible-md visible-sm visible-xs"></div>
-
-							<!-- product -->
-							<div class="col-md-4 col-xs-6">
-								<div class="product">
-									<div class="product-img">
-										<img src="{% static 'img/accessories/KB-109F-B_hires_photo---bf69bea5-e052-4a4c-b164-cd152169fd9a-650x400-1200x1200.webp' %}" alt="">
-									</div>
-									<div class="product-body">
-										<p class="product-category">Accessories</p>
-										<h3 class="product-name"><a href="#">USB Flexible Keyboard</a></h3>
-										<h4 class="product-price">$5.00 <del class="product-old-price">$9.00</del></h4>
-										<div class="product-rating">
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-											<i class="fa fa-star"></i>
-										</div>
-										<div class="product-btns">
-											<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-											<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-											<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-										</div>
-									</div>
-									<div class="add-to-cart">
-										<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-									</div>
-								</div>
-							</div>
-							<!-- /product -->
-
-							<!-- product -->
-							<div class="col-md-4 col-xs-6">
-								<div class="product">
-									<div class="product-img">
-										<img src="{% static 'img/accessories/apex 3 1-1200x1200.webp' %}" alt="">
-									</div>
-									<div class="product-body">
-										<p class="product-category">Accessories</p>
-										<h3 class="product-name"><a href="#">SteelSeries Apex 3</a></h3>
-										<h4 class="product-price">$59.00 <del class="product-old-price">$70.00</del></h4>
-										<div class="product-rating">
-										</div>
-										<div class="product-btns">
-											<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-											<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-											<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-										</div>
-									</div>
-									<div class="add-to-cart">
-										<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-									</div>
-								</div>
-							</div>
-							<!-- /product -->
-
-							<div class="clearfix visible-sm visible-xs"></div>
-
-							<!-- product -->
-							<div class="col-md-4 col-xs-6">
-								<div class="product">
-									<div class="product-img">
-										<img src="{% static 'img/accessories/g705-gallery-3-1200x1200.webp' %}" alt="">
-									</div>
-									<div class="product-body">
-										<p class="product-category">Accessories</p>
-										<h3 class="product-name"><a href="#">Logitech G705</a></h3>
-										<h4 class="product-price">$90.00 <del class="product-old-price">140.00</del></h4>
-										<div class="product-rating">
-										</div>
-										<div class="product-btns">
-											<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-											<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-											<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-										</div>
-									</div>
-									<div class="add-to-cart">
-										<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-									</div>
-								</div>
-							</div>
-							<!-- /product -->
 						</div>
 						<!-- /store products -->
 
