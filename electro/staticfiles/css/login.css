@@ -1,0 +1,27 @@
+body {
+            background-color: black;
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container {
+            background-color: #333;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .left-column {
+            text-align: center;
+        }
+        .left-column img {
+            max-width: 100%;
+            height: auto;
+        }
+        .left-column p {
+            margin-top: 20px;
+        }
+        .btn-primary {
+            background-color: red; /* Changed the button color to green */
+            border-color: red; /* Match border color with background color */
+        }

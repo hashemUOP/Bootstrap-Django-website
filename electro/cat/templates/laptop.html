@@ -476,7 +476,7 @@
 									<a href="{% url 'product_detail' product_id=product.ID %}">
 										<div class="product">
 											<div class="product-img">
-												<img src="{{ product.image1.url }}" alt="{{ product.name }}">
+												<img src="{{ product.image1 }}" alt="{{ product.name }}">
 												<div class="product-label">
 													<span class="new">NEW</span>
 												</div>
@@ -523,18 +523,28 @@
 						</div>
 						<!-- /store products -->
 
-						<!-- store bottom filter -->
+						<!-- Pagination Controls -->
 						<div class="store-filter clearfix">
-							<span class="store-qty">Showing 20-100 products</span>
+							<span class="store-qty">
+								Showing {{ page_obj.start_index }}-{{ page_obj.end_index }} of {{ page_obj.paginator.count }} products
+							</span>
 							<ul class="store-pagination">
-								<li class="active">1</li>
-								<li><a href="#">2</a></li>
-								<li><a href="#">3</a></li>
-								<li><a href="#">4</a></li>
-								<li><a href="#"><i class="fa fa-angle-right"></i></a></li>
+								{% if page_obj.has_previous %}
+									<li><a href="?page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-left"></i></a></li>
+								{% endif %}
+
+								{% for num in page_obj.paginator.page_range %}
+									<li class="{% if num == page_obj.number %}active{% endif %}">
+										<a href="?page={{ num }}">{{ num }}</a>
+									</li>
+								{% endfor %}
+
+								{% if page_obj.has_next %}
+									<li><a href="?page={{ page_obj.next_page_number }}"><i class="fa fa-angle-right"></i></a></li>
+								{% endif %}
 							</ul>
 						</div>
-						<!-- /store bottom filter -->
+
 					</div>
 					<!-- /STORE -->
 				</div>
