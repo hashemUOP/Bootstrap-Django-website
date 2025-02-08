@@ -43,8 +43,13 @@ def remove_cart_item(cart_id):
     return redirect('home')
 
 
+
 def recommend_view(request):
     user = request.user
     user_id = user.id
-    recommended_products = recommend_products(user_id)
+    if request.user.is_authenticated:
+        user_id = request.user.id  # Get logged-in user ID
+        recommended_products = recommend_products(user_id)  # Get recommended products
+    else:
+        recommended_products = []  # If user is not logged in, show no recommendations
     return recommended_products

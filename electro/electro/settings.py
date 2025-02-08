@@ -18,7 +18,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # if admin page doesn't work replace MEDIA_URL and MEDIA_ROOT with the comments under
 # MEDIA_URL = '/media/'
 # MEDIA_ROOT = BASE_DIR / 'technest' / 'images' / 'products'
-
+#
 MEDIA_URL = ''
 MEDIA_ROOT = ''
 

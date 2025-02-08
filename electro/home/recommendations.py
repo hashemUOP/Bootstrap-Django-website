@@ -1,3 +1,4 @@
+
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
 from products.models import UserReview, ProductModel
@@ -27,6 +28,10 @@ def generate_user_similarity():
 
 def recommend_products(user_id, num_recommendations=5):
     similarity_matrix, user_ids = generate_user_similarity()  # Generates the similarity matrix
+
+    # Check if the user_id exists in the user_ids list
+    if user_id not in user_ids:
+        raise ValueError(f"User ID {user_id} not found in the user list.")
 
     user_index = list(user_ids).index(user_id)  # Finds the index of the target user (user_id) in the list of user IDs
 
